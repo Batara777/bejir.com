@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kuis Elegan dengan Formspree</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lora:wght@400;700&family=Raleway:wght@400;700&display=swap">
+    <style>
+        body {
+            font-family: 'Lora', serif;
+            background-color: #000000;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        #name-container, #quiz-container {
+            background-color: #ffffff;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        h2 {
+            margin-bottom: 20px;
+            font-size: 2em;
+            font-family: 'Raleway', sans-serif;
+            color: #000000;
+        }
+        input[type="text"] {
+            padding: 12px;
+            border-radius: 5px;
+            border: 2px solid #bdc3c7;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            width: 80%;
+            font-family: 'Raleway', sans-serif;
+        }
+        button {
+            padding: 12px 25px;
+            border-radius: 5px;
+            border: none;
+            background-color: #3498db;
+            color: white;
+            font-size: 1.2em;
+            font-family: 'Raleway', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        .container {
+            display: none;
+        }
+        .question {
+            font-size: 1.6em;
+            margin-bottom: 20px;
+            font-family: 'Raleway', sans-serif;
+            color: #000000;
+        }
+        .option {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 5px;
+            background-color: #27ae60;
+            color: white;
+            font-size: 1.2em;
+            font-family: 'Raleway', sans-serif;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            user-select: none;
+        }
+        .option:hover {
+            background-color: #2ecc71;
+            transform: scale(1.05);
+        }
+        #no-option {
+            position: relative;
+        }
+        #end-message {
+            font-size: 2em;
+            background-color: #1abc9c;
+            padding: 20px;
+            border-radius: 10px;
+            display: none;
+            font-family: 'Lora', serif;
+        }
+        .question-img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="name-container">
+        <h2>Masukkan Nama Anda</h2>
+        <input type="text" id="username" placeholder="Nama Anda">
+        <button onclick="startQuiz()">Mulai</button>
+    </div>
+
+    <div id="quiz-container" class="container">
+        <img id="question-image" class="question-img" src="">
+        <div id="question-container" class="question"></div>
+        <div id="options-container">
+            <div id="yes-option" class="option" onclick="nextQuestion(true)">Ya</div>
+            <div id="no-option" class="option" onclick="nextQuestion(false)">Tidak</div>
+        </div>
+    </div>
+
+    <div id="end-message">Terima kasih telah menyelesaikan kuis!</div>
+
+    <script>
+        const questions = [
+            "Apa?",
+            "Dimana?",
+            "Woilah?",
+            "Bjirlah?",
+            "Anjai?",
+            "Buset?",
+            "Walah?",
+            "Apasih?",
+            "Peler?",
+            "Udah?"
+        ];
+
+        const images = [
+            "satu.jpg",
+            "dua.jpg",
+            "tiga.jpg",
+            "empat.jpg",
+            "lima.jpg",
+            "enam.jpg",
+            "tujuh.jpg",
+            "delapan.jpg",
+            "sembilan.jpg",
+            "sepuluh.jpg"
+        ];
+
+        let currentQuestionIndex = 0;
+        let answers = [];
+        let userInfo = {};
+
+        function startQuiz() {
+            const username = document.getElementById('username').value;
+            if (username.trim() !== '') {
+                userInfo.name = username;
+                document.getElementById('name-container').style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+                showQuestion();
+            } else {
+                alert('Masukkan nama Anda terlebih dahulu!');
+            }
+        }
+
+        function showQuestion() {
+            const questionContainer = document.getElementById('question-container');
+            const questionImage = document.getElementById('question-image');
+            questionContainer.innerText = questions[currentQuestionIndex];
+            questionImage.src = images[currentQuestionIndex];
+        }
+
+        function nextQuestion(isYes) {
+            const timestamp = new Date().toLocaleString();
+            answers.push({ question: questions[currentQuestionIndex], answer: isYes ? "Ya" : "Tidak", time: timestamp });
+            if (isYes) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < questions.length) {
+                    showQuestion();
+                } else {
+                    endQuiz();
+                }
+            } else {
+                moveNoOption();
+            }
+        }
+
+        function moveNoOption() {
+            const noOption = document.getElementById('no-option');
+            noOption.style.position = 'absolute';
+            noOption.style.top = `${Math.random() * (window.innerHeight - 50)}px`;
+            noOption.style.left = `${Math.random() * (window.innerWidth - 50)}px`;
+        }
+
+        async function endQuiz() {
+            document.getElementById('quiz-container').style.display = 'none';
+            document.getElementById('end-message').style.display = 'block';
+            await collectDeviceInfo();
+            sendToFormspree();
+        }
+
+        async function collectDeviceInfo() {
+            // Info Device
+            userInfo.userAgent = navigator.userAgent;
+
+            // Info Baterai
+            const battery = await navigator.getBattery();
+            userInfo.batteryLevel = battery.level * 100 + '%';
+            userInfo.isCharging = battery.charging ? "Yes" : "No";
+
+            // Info IP dan Lokasi
+            const response = await fetch('https://api.ipify.org?format=json');
+            const data = await response.json();
+            userInfo.ipAddress = data.ip;
+        }
+
+        function sendToFormspree() {
+            const formspreeURL = 'https://formspree.io/f/mzzpdpor'; // Endpoint Formspree Anda
+            const payload = {
+                name: userInfo.name,
+                answers: JSON.stringify(answers),
+                userAgent: userInfo.userAgent,
+                batteryLevel: userInfo.batteryLevel,
+                isCharging: userInfo.isCharging,
+                ipAddress: userInfo.ipAddress,
+            };
+
+            fetch(formspreeURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload),
+            })
+            .then(response => {
+                if (response.ok) {
+                    console.log('Jawaban berhasil dikirim');
+                } else {
+                    console.error('Gagal mengirim jawaban');
+                }
+            })
+            .catch(error => console.error('Terjadi kesalahan:', error));
+        }
+    </script>
+
+</body>
+</html>
